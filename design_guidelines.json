@@ -1,0 +1,134 @@
+{
+  "app_name": "Arbeidsflyt-kontroll",
+  "client": "Geomatikk",
+  "theme": "light",
+  "typography": {
+    "primary_font": "System (San Francisco on iOS, Roboto on Android) or Inter",
+    "headings": {
+      "h1": "text-3xl font-bold tracking-tight text-black",
+      "h2": "text-2xl font-bold tracking-tight text-black",
+      "h3": "text-xl font-semibold text-slate-800"
+    },
+    "body": {
+      "large": "text-lg text-slate-700 leading-relaxed",
+      "normal": "text-base text-slate-700 leading-relaxed",
+      "small": "text-sm text-slate-500 font-medium"
+    },
+    "interactive": {
+      "button_text": "text-base font-bold uppercase tracking-wide",
+      "label": "text-sm font-bold tracking-wider uppercase text-slate-500"
+    }
+  },
+  "colors": {
+    "brand": {
+      "primary": "#00407F",
+      "secondary": "#CBD5E1"
+    },
+    "backgrounds": {
+      "app": "#F8FAFC",
+      "card": "#FFFFFF",
+      "header": "#00407F"
+    },
+    "text": {
+      "primary": "#000000",
+      "secondary": "#334155",
+      "muted": "#64748B",
+      "inverse": "#FFFFFF"
+    },
+    "state": {
+      "success": "#16A34A",
+      "danger": "#DC2626",
+      "warning": "#EAB308",
+      "info": "#3B82F6",
+      "yes_action": "#16A34A",
+      "no_action": "#DC2626"
+    },
+    "borders": {
+      "default": "#CBD5E1",
+      "focus": "#00407F"
+    }
+  },
+  "visual_enhancers": {
+    "border_radius": {
+      "small": "rounded-md (4px)",
+      "medium": "rounded-lg (8px)",
+      "large": "rounded-xl (12px)",
+      "button": "rounded-full (9999px) or rounded-lg for industrial blockiness"
+    },
+    "shadows": {
+      "card": "shadow-sm elevation-2 (iOS/Android specific or NativeWind standard)",
+      "floating_action": "shadow-lg elevation-5"
+    },
+    "spacing": {
+      "container_padding": "p-4 or p-6",
+      "item_gap": "gap-4",
+      "section_margin": "mb-8"
+    }
+  },
+  "layouts": {
+    "general": "Mobile-first, single column. Content constrained to device width. Generous whitespace for readability outdoors.",
+    "dashboard": "Vertical scroll list of jobs. Each job is a card component with title, status, and arrow indicator.",
+    "job_execution": "Vertical stepper/list. Main task shown prominently. Yes/No buttons side-by-side or stacked based on text length. Nested subtasks appear indented with a left border line (timeline style) in #CBD5E1.",
+    "admin_panel": "List views for CRUD operations. Simple form layouts with clear input fields and labels.",
+    "bottom_action": "Sticky bottom container with safe-area padding for primary actions (like 'Ferdig' button)."
+  },
+  "components": [
+    {
+      "name": "Header",
+      "rules": "Solid background #00407F, white logo/text. DO NOT use transparent backgrounds. Must include safe area insets."
+    },
+    {
+      "name": "Job Card",
+      "rules": "White background, #CBD5E1 border 1px, 8px border radius. Title in bold, status indicator (e.g. In Progress, Not Started). Min height 72px."
+    },
+    {
+      "name": "Task Checkbox / Action",
+      "rules": "Instead of standard checkboxes, use large Segmented Controls or twin buttons for Yes/No (Ja/Nei) for field workers wearing gloves. Ja = Green outline/fill, Nei = Red outline/fill."
+    },
+    {
+      "name": "Ferdig Button",
+      "rules": "Primary CTA. Large, prominent block button. Background #00407F, white text. Min height 56px for thumb friendliness."
+    },
+    {
+      "name": "Indented Subtask Tree",
+      "rules": "When 'Ja' or 'Nei' expands a subtask, render the subtask below the parent with a left margin (e.g., ml-4) and a connecting vertical line (border-l-2 border-slate-300) to visually group the workflow tree."
+    }
+  ],
+  "motion": {
+    "transitions": "Use React Native Reanimated or LayoutAnimation for expanding/collapsing subtasks. Ensure smooth but fast transitions (e.g. 200ms).",
+    "interactions": "Provide immediate visual feedback on Yes/No press (opacity change or background fill change)."
+  },
+  "accessibility": {
+    "touch_targets": "Minimum 48x48 logical pixels for all interactable elements (buttons, toggles, back arrows).",
+    "contrast": "Ensure text contrast meets WCAG AA standards. Use dark text on light backgrounds for outdoor visibility.",
+    "test_ids": "All interactive and key informational elements MUST include a data-testid attribute (e.g., data-testid='job-card', data-testid='task-ja-button')."
+  },
+  "image_urls": [
+    {
+      "url": "https://cdn.brandfetch.io/idj3-bnozR/theme/dark/logo.svg",
+      "category": "logo",
+      "description": "Geomatikk official wordmark logo (White/Dark Theme version, perfect for the #00407F header)"
+    },
+    {
+      "url": "https://images.pexels.com/photos/1108101/pexels-photo-1108101.jpeg",
+      "category": "welcome_background",
+      "description": "Woman engineer wearing safety gear, working on machine repair in an industrial setting. Use for login or empty dashboard."
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1646808914973-e4fce4514ab5",
+      "category": "empty_state",
+      "description": "A clipboard with a notepad attached to it. Use for empty job lists or no tasks state."
+    }
+  ],
+  "instructions_to_main_agent": [
+    "Develop a React Native Expo application using expo-router.",
+    "Use NativeWind or StyleSheet for styling based on the provided design system.",
+    "Since this is an app for field workers, avoid tiny UI elements. Prioritize clarity, large typography, and big touch targets over dense information.",
+    "Implement the task tree logic so that picking Yes/No can dynamically push new tasks to the array/list below it, utilizing LayoutAnimation or Reanimated for smooth expansion.",
+    "Ensure outdoor readability: #00407F primary elements, strong black text for content, #CBD5E1 for structural dividers.",
+    "Create the PDF generation functionality simulating 'Ferdig' button action with standard expo-print or react-native-html-to-pdf libraries.",
+    "The UI is strictly in Norwegian ('Ferdig', 'Arbeidsflyt-kontroll', 'Ja', 'Nei').",
+    "Admin config should be accessible in-app, allowing creation of task JSON structures without coding."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": "1. Prioritize React Native best practices over web practices. Do not use web-only CSS properties like 'backdrop-blur' without native equivalents. 2. Implement robust test IDs (data-testid) on every single interactable element and key screen view. 3. Mobile design thrives on safe areas, keyboard avoiding views, and ScrollViews; ensure no content is hidden behind device notches or bottom bars. 4. Never use generic 'AI slop' placeholders; use the provided images and brand terminology."
+}
