@@ -64,6 +64,7 @@ class AnswerRecord(BaseModel):
 class SessionCreate(BaseModel):
     job_id: str
     job_name: str
+    start_location: Optional[dict] = None
 
 
 class SessionResponse(BaseModel):
@@ -74,12 +75,15 @@ class SessionResponse(BaseModel):
     completed_at: Optional[str] = None
     answers: List[Any] = []
     status: str
+    start_location: Optional[dict] = None
+    end_location: Optional[dict] = None
 
 
 class SessionUpdate(BaseModel):
     answers: List[AnswerRecord]
     status: Optional[str] = None
     completed_at: Optional[str] = None
+    end_location: Optional[dict] = None
 
 
 def serialize_doc(doc: dict) -> dict:
@@ -161,6 +165,8 @@ async def create_session(session_data: SessionCreate):
         "completed_at": None,
         "answers": [],
         "status": "in_progress",
+        "start_location": session_data.start_location,
+        "end_location": None,
     }
     await db.sessions.insert_one(doc)
     return serialize_doc(doc)
@@ -183,6 +189,8 @@ async def update_session(session_id: str, update_data: SessionUpdate):
         update["status"] = update_data.status
     if update_data.completed_at:
         update["completed_at"] = update_data.completed_at
+    if update_data.end_location is not None:
+        update["end_location"] = update_data.end_location
     result = await db.sessions.find_one_and_update(
         {"_id": session_id},
         {"$set": update},

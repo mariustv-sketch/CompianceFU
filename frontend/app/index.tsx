@@ -11,9 +11,31 @@ import {
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState, useCallback } from 'react';
+import * as Location from 'expo-location';
 import { api } from '../services/api';
-import { Job } from '../types';
+import { Job, LocationData } from '../types';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
+
+async function getLocationData(): Promise<LocationData | null> {
+  try {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') return null;
+    const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+    const { latitude, longitude } = loc.coords;
+    let address = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+    try {
+      const geo = await Location.reverseGeocodeAsync({ latitude, longitude });
+      if (geo.length > 0) {
+        const g = geo[0];
+        const parts = [g.street, g.streetNumber, g.postalCode, g.city, g.country].filter(Boolean);
+        if (parts.length > 0) address = parts.join(' ');
+      }
+    } catch { /* keep coordinate fallback */ }
+    return { lat: latitude, lon: longitude, address };
+  } catch {
+    return null;
+  }
+}
 
 export default function Dashboard() {
   const router = useRouter();
@@ -48,7 +70,12 @@ export default function Dashboard() {
     if (starting) return;
     setStarting(job.id);
     try {
-      const session = await api.createSession({ job_id: job.id, job_name: job.name });
+      const location = await getLocationData();
+      const session = await api.createSession({
+        job_id: job.id,
+        job_name: job.name,
+        start_location: location,
+      });
       router.push(`/session/${session.id}`);
     } catch {
       Alert.alert('Feil', 'Kunne ikke starte jobb');

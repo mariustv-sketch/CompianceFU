@@ -1,3 +1,9 @@
+export interface LocationData {
+  lat: number;
+  lon: number;
+  address: string;
+}
+
 export interface SubtaskConfig {
   id: string;
   question: string;
@@ -33,6 +39,8 @@ export interface Session {
   completed_at: string | null;
   answers: AnswerRecord[];
   status: 'in_progress' | 'completed';
+  start_location: LocationData | null;
+  end_location: LocationData | null;
 }
 
 // Flat task item used during session execution

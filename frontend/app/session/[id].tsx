@@ -13,9 +13,31 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import * as Location from 'expo-location';
 import { api } from '../../services/api';
-import { Job, Session, SubtaskConfig, ExecutionTask, AnswerRecord } from '../../types';
+import { Job, Session, SubtaskConfig, ExecutionTask, AnswerRecord, LocationData } from '../../types';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../../constants/theme';
+
+async function getLocationData(): Promise<LocationData | null> {
+  try {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') return null;
+    const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+    const { latitude, longitude } = loc.coords;
+    let address = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+    try {
+      const geo = await Location.reverseGeocodeAsync({ latitude, longitude });
+      if (geo.length > 0) {
+        const g = geo[0];
+        const parts = [g.street, g.streetNumber, g.postalCode, g.city, g.country].filter(Boolean);
+        if (parts.length > 0) address = parts.join(' ');
+      }
+    } catch { /* keep coordinate fallback */ }
+    return { lat: latitude, lon: longitude, address };
+  } catch {
+    return null;
+  }
+}
 
 // ---- Helpers ----
 function buildExecutionList(
@@ -52,13 +74,26 @@ function collectDescendants(taskId: string, list: ExecutionTask[]): string[] {
 function buildPDFHtml(
   session: Session,
   executionList: ExecutionTask[],
-  answers: Record<string, AnswerRecord>
+  answers: Record<string, AnswerRecord>,
+  endLocation: LocationData | null
 ): string {
   const now = new Date().toLocaleString('nb-NO');
   const started = new Date(session.started_at).toLocaleString('nb-NO');
   const completed = session.completed_at
     ? new Date(session.completed_at).toLocaleString('nb-NO')
     : now;
+
+  function locationBlock(loc: LocationData | null, label: string): string {
+    if (!loc) return '';
+    return `
+    <div style="display:flex; gap:8px; align-items:flex-start; margin-bottom:6px;">
+      <div style="background:#00407F; color:white; font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px; white-space:nowrap; margin-top:1px;">${label}</div>
+      <div>
+        <div style="font-size:12px; font-weight:600; color:#0F172A;">${escapeHtml(loc.address)}</div>
+        <div style="font-size:10px; color:#64748B;">Lat: ${loc.lat.toFixed(6)} &nbsp;Lon: ${loc.lon.toFixed(6)}</div>
+      </div>
+    </div>`;
+  }
 
   const tasksHtml = executionList
     .map((item) => {
@@ -79,6 +114,8 @@ function buildPDFHtml(
     })
     .join('');
 
+  const startLoc = session.start_location || null;
+
   return `<!DOCTYPE html>
 <html lang="no">
 <head><meta charset="UTF-8"><style>
@@ -93,9 +130,15 @@ function buildPDFHtml(
   </div>
   <div style="padding:20px 24px;">
     <div style="font-size:19px; font-weight:800; color:#0F172A; margin-bottom:4px;">${escapeHtml(session.job_name)}</div>
-    <div style="font-size:12px; color:#64748B; margin-bottom:20px;">
+    <div style="font-size:12px; color:#64748B; margin-bottom:12px;">
       Startet: ${started} &nbsp;•&nbsp; Fullført: ${completed}
     </div>
+    ${(startLoc || endLocation) ? `
+    <div style="background:#F1F5F9; border:1px solid #CBD5E1; border-radius:8px; padding:12px 14px; margin-bottom:18px;">
+      <div style="font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">Lokasjon</div>
+      ${locationBlock(startLoc, 'Start')}
+      ${locationBlock(endLocation, 'Slutt')}
+    </div>` : ''}
     ${tasksHtml}
   </div>
   <div style="margin:16px 24px 28px; padding-top:14px; border-top:1px solid #CBD5E1;">
@@ -253,7 +296,7 @@ export default function SessionScreen() {
   }
 
   const saveToBackend = useCallback(
-    async (newAnswers: Record<string, AnswerRecord>, status?: string) => {
+    async (newAnswers: Record<string, AnswerRecord>, status?: string, endLocation?: LocationData | null) => {
       if (!session) return;
       try {
         const completed_at =
@@ -262,6 +305,7 @@ export default function SessionScreen() {
           answers: Object.values(newAnswers),
           status,
           completed_at,
+          end_location: endLocation ?? undefined,
         });
         if (status === 'completed') {
           setSession((s) => s ? { ...s, status: 'completed', completed_at: completed_at || null } : s);
@@ -313,13 +357,16 @@ export default function SessionScreen() {
     if (!session || !job) return;
     setGenerating(true);
     try {
-      const updatedSession = {
+      // Get end location
+      const endLocation = await getLocationData();
+      const completedAt = new Date().toISOString();
+      const updatedSession: Session = {
         ...session,
-        status: 'completed' as const,
-        completed_at: new Date().toISOString(),
+        status: 'completed',
+        completed_at: completedAt,
       };
-      await saveToBackend(answers, 'completed');
-      const html = buildPDFHtml(updatedSession, executionList, answers);
+      await saveToBackend(answers, 'completed', endLocation);
+      const html = buildPDFHtml(updatedSession, executionList, answers, endLocation);
       const { uri } = await Print.printToFileAsync({ html });
       const canShare = await Sharing.isAvailableAsync();
       if (canShare) {

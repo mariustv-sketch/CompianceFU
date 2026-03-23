@@ -31,6 +31,9 @@ Build a workflow control app inspired by Geomatikk.no branding. Users create job
 - ✅ Geomatikk brand: #00407F header, Norwegian language throughout
 - ✅ 2 example jobs seeded: Kabelpåvisning, Inspeksjon av rørledning
 - ✅ PDF report with job name, all tasks/subtasks, Ja/Nei answers, timestamps
+- ✅ **Geotagging**: GPS + reverse geocode address at job START and FERDIG (end)
+- ✅ PDF lokasjonsblokk: Start/Slutt adresse + koordinater (lat/lon)
+- ✅ app.json: iOS NSLocationWhenInUseUsageDescription + Android ACCESS_FINE_LOCATION
 
 ## Prioritized Backlog
 ### P0 (Done)
