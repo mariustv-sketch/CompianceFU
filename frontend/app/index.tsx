@@ -7,6 +7,10 @@ import {
   ActivityIndicator,
   RefreshControl,
   Alert,
+  Modal,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -44,6 +48,11 @@ export default function Dashboard() {
   const [refreshing, setRefreshing] = useState(false);
   const [starting, setStarting] = useState<string | null>(null);
 
+  // Name modal state
+  const [nameModalVisible, setNameModalVisible] = useState(false);
+  const [pendingJob, setPendingJob] = useState<Job | null>(null);
+  const [sessionName, setSessionName] = useState('');
+
   const loadJobs = useCallback(async () => {
     try {
       await api.seedData().catch(() => {});
@@ -67,13 +76,22 @@ export default function Dashboard() {
   }, [loadJobs]);
 
   async function startJob(job: Job) {
-    if (starting) return;
-    setStarting(job.id);
+    // Show name modal instead of starting directly
+    setPendingJob(job);
+    setSessionName(job.name);
+    setNameModalVisible(true);
+  }
+
+  async function confirmStart() {
+    if (!pendingJob) return;
+    const name = sessionName.trim() || pendingJob.name;
+    setNameModalVisible(false);
+    setStarting(pendingJob.id);
     try {
       const location = await getLocationData();
       const session = await api.createSession({
-        job_id: job.id,
-        job_name: job.name,
+        job_id: pendingJob.id,
+        job_name: name,
         start_location: location,
       });
       router.push(`/session/${session.id}`);
@@ -81,6 +99,7 @@ export default function Dashboard() {
       Alert.alert('Feil', 'Kunne ikke starte jobb');
     } finally {
       setStarting(null);
+      setPendingJob(null);
     }
   }
 
@@ -131,6 +150,59 @@ export default function Dashboard() {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
+      {/* Name modal */}
+      <Modal
+        visible={nameModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setNameModalVisible(false)}
+      >
+        <KeyboardAvoidingView
+          style={modal.overlay}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <View style={modal.sheet}>
+            <View style={modal.handle} />
+            <Text style={modal.title}>Gi jobben et navn</Text>
+            <Text style={modal.subtitle}>
+              Dette blir overskriften i PDF-rapporten
+            </Text>
+            <TextInput
+              testID="session-name-input"
+              style={modal.input}
+              value={sessionName}
+              onChangeText={setSessionName}
+              placeholder="F.eks. Storgata 15 – 24.03.2026"
+              placeholderTextColor={COLORS.textMuted}
+              autoFocus
+              selectTextOnFocus
+              returnKeyType="done"
+              onSubmitEditing={confirmStart}
+            />
+            <View style={modal.btnRow}>
+              <TouchableOpacity
+                style={modal.cancelBtn}
+                onPress={() => { setNameModalVisible(false); setPendingJob(null); }}
+              >
+                <Text style={modal.cancelText}>Avbryt</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                testID="confirm-start-btn"
+                style={[modal.startBtn, starting && modal.startBtnDisabled]}
+                onPress={confirmStart}
+                disabled={!!starting}
+              >
+                {starting ? (
+                  <ActivityIndicator size="small" color={COLORS.textInverse} />
+                ) : (
+                  <Text style={modal.startText}>Start jobb</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
       {/* Admin button */}
       <View style={styles.adminBar}>
         <Text style={styles.sectionTitle}>
@@ -313,5 +385,82 @@ const styles = StyleSheet.create({
     color: COLORS.textInverse,
     fontSize: FONT_SIZE.md,
     fontWeight: '700',
+  },
+});
+
+const modal = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  sheet: {
+    backgroundColor: COLORS.card,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: SPACING.md,
+    paddingBottom: 36,
+    gap: SPACING.sm,
+  },
+  handle: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: COLORS.border,
+    alignSelf: 'center',
+    marginBottom: SPACING.xs,
+  },
+  title: {
+    fontSize: FONT_SIZE.xl,
+    fontWeight: '800',
+    color: COLORS.textPrimary,
+  },
+  subtitle: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textMuted,
+    lineHeight: 18,
+  },
+  input: {
+    backgroundColor: COLORS.background,
+    borderWidth: 1.5,
+    borderColor: COLORS.primary,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+    fontSize: FONT_SIZE.lg,
+    color: COLORS.textPrimary,
+    marginTop: 4,
+  },
+  btnRow: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+    marginTop: SPACING.xs,
+  },
+  cancelBtn: {
+    flex: 1,
+    height: 52,
+    borderRadius: RADIUS.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+  },
+  cancelText: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: '700',
+    color: COLORS.textSecondary,
+  },
+  startBtn: {
+    flex: 2,
+    height: 52,
+    borderRadius: RADIUS.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.primary,
+  },
+  startBtnDisabled: { backgroundColor: COLORS.textMuted },
+  startText: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: '700',
+    color: COLORS.textInverse,
   },
 });

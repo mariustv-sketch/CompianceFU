@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 import * as Location from 'expo-location';
 import { api } from '../../services/api';
 import { Job, Session, SubtaskConfig, ExecutionTask, AnswerRecord, LocationData } from '../../types';
@@ -359,14 +360,23 @@ export default function SessionScreen() {
       await saveToBackend(answers, 'completed', endLocation);
       const html = buildPDFHtml(updatedSession, executionList, answers, endLocation);
       const { uri } = await Print.printToFileAsync({ html });
+      // Rename file to session name
+      const safeName = (session.job_name || 'rapport')
+        .replace(/[^a-zA-Z0-9æøåÆØÅ \-_]/g, '')
+        .trim()
+        .replace(/\s+/g, '_');
+      const namedUri = `${uri.substring(0, uri.lastIndexOf('/') + 1)}${safeName}.pdf`;
+      await FileSystem.copyAsync({ from: uri, to: namedUri }).catch(() => {});
+      const finalUri = namedUri;
       const canShare = await Sharing.isAvailableAsync();
       if (canShare) {
-        await Sharing.shareAsync(uri, {
+        await Sharing.shareAsync(finalUri, {
           mimeType: 'application/pdf',
           dialogTitle: `${session.job_name} - Rapport`,
+          UTI: 'com.adobe.pdf',
         });
       } else {
-        Alert.alert('PDF lagret', `Rapport lagret til: ${uri}`);
+        Alert.alert('PDF lagret', `Rapport lagret til: ${finalUri}`);
       }
     } catch (err) {
       Alert.alert('Feil', 'Kunne ikke generere PDF');
