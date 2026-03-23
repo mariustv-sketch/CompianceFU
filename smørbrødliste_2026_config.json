@@ -1,0 +1,616 @@
+{
+  "jobs": [
+    {
+      "name": "Påvisning – Smørbrødliste 2026",
+      "description": "Komplett sjekkliste for kabelpåvisning – Geomatikk 2026 (16 trinn)",
+      "tasks": [
+        {
+          "id": "t01-jobbsjekk",
+          "question": "TRINN 1 – Dagen før: Er kommentarer og jobbinnhold sjekket?",
+          "yes_action": "create_subtasks",
+          "yes_subtasks": [
+            {
+              "id": "t01a-kunde",
+              "question": "Er kunden ringt ut dagen i forveien?",
+              "yes_action": "create_subtasks",
+              "yes_subtasks": [
+                {
+                  "id": "t01a1-status",
+                  "question": "Er STATUS endret til [UNDER UTFØRELSE]?",
+                  "yes_action": "complete",
+                  "yes_subtasks": [],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ],
+              "no_action": "create_subtasks",
+              "no_subtasks": [
+                {
+                  "id": "t01a-sms",
+                  "question": "Er SMS/melding sendt via DP ved manglende svar?",
+                  "yes_action": "create_subtasks",
+                  "yes_subtasks": [
+                    {
+                      "id": "t01a-sms-status",
+                      "question": "Er STATUS endret til [UNDER UTFØRELSE]?",
+                      "yes_action": "complete",
+                      "yes_subtasks": [],
+                      "no_action": "complete",
+                      "no_subtasks": []
+                    }
+                  ],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ]
+            }
+          ],
+          "no_action": "complete",
+          "no_subtasks": []
+        },
+
+        {
+          "id": "t02-avklaringer",
+          "question": "TRINN 2 – Avklaringer: Er intern ordrekommentar sjekket?",
+          "yes_action": "create_subtasks",
+          "yes_subtasks": [
+            {
+              "id": "t02a-omrade",
+              "question": "Stemmer innmeldt arbeidsområde noenlunde?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "create_subtasks",
+              "no_subtasks": [
+                {
+                  "id": "t02a-mottak",
+                  "question": "Er mottaket kontaktet ang. utvidet/endret område (915 09 146)?",
+                  "yes_action": "complete",
+                  "yes_subtasks": [],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ]
+            }
+          ],
+          "no_action": "create_subtasks",
+          "no_subtasks": [
+            {
+              "id": "t02-simployer",
+              "question": "Er avvik meldt i Simployer (mangler intern ordrekommentar)?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ]
+        },
+
+        {
+          "id": "t03-omrade-utvidet",
+          "question": "TRINN 3 – Utvidet område: Er arbeidsområdet innenfor bestilt område og kartutsnitt?",
+          "yes_action": "complete",
+          "yes_subtasks": [],
+          "no_action": "create_subtasks",
+          "no_subtasks": [
+            {
+              "id": "t03a-10m",
+              "question": "Kommer utvidet arbeidsområde innenfor 10m av infrastruktur uten aksjon 'Må påvises'?",
+              "yes_action": "create_subtasks",
+              "yes_subtasks": [
+                {
+                  "id": "t03a-kontakt",
+                  "question": "Er mottaket kontaktet og godkjenning innhentet (915 09 146)?",
+                  "yes_action": "complete",
+                  "yes_subtasks": [],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ]
+        },
+
+        {
+          "id": "t04-hms-sja",
+          "question": "TRINN 4 – HMS/SJA: Er det trygt å utføre jobben?",
+          "yes_action": "create_subtasks",
+          "yes_subtasks": [
+            {
+              "id": "t04a-sja",
+              "question": "Er SJA fylt ut for arbeidsområdet?",
+              "yes_action": "create_subtasks",
+              "yes_subtasks": [
+                {
+                  "id": "t04a1-kum",
+                  "question": "Åpnes kum i dette oppdraget?",
+                  "yes_action": "create_subtasks",
+                  "yes_subtasks": [
+                    {
+                      "id": "t04a1-kum-instruks",
+                      "question": "Er kum-instruks fulgt og kommentert i SJA?",
+                      "yes_action": "complete",
+                      "yes_subtasks": [],
+                      "no_action": "complete",
+                      "no_subtasks": []
+                    }
+                  ],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                },
+                {
+                  "id": "t04a2-jernbane",
+                  "question": "Er det arbeid på jernbane med Hovedsikkerhetsvakt?",
+                  "yes_action": "create_subtasks",
+                  "yes_subtasks": [
+                    {
+                      "id": "t04a2-hsv",
+                      "question": "Er jernbanestrekning og posisjon GSM-telefon kjent til HSV?",
+                      "yes_action": "complete",
+                      "yes_subtasks": [],
+                      "no_action": "complete",
+                      "no_subtasks": []
+                    }
+                  ],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ],
+              "no_action": "create_subtasks",
+              "no_subtasks": [
+                {
+                  "id": "t04a-fyll-sja",
+                  "question": "Er faremomenter dokumentert og ny SJA utfylt?",
+                  "yes_action": "complete",
+                  "yes_subtasks": [],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ]
+            },
+            {
+              "id": "t04b-verneutstyr",
+              "question": "Er riktig verneutstyr på plass (Brodder, Hjelm m/visir)?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ],
+          "no_action": "create_subtasks",
+          "no_subtasks": [
+            {
+              "id": "t04-utrygt",
+              "question": "Er sikkerheten avklart og tiltak utført slik at det er trygt å fortsette?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ]
+        },
+
+        {
+          "id": "t05-netteierliste",
+          "question": "TRINN 5 – Netteierliste: Er alle nett som skal påvises identifisert?",
+          "yes_action": "create_subtasks",
+          "yes_subtasks": [
+            {
+              "id": "t05a-spec",
+              "question": "Er netteierspesifikasjon sjekket (tomtegrense/husvegg/LFS-avstand for HSP)?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            },
+            {
+              "id": "t05b-uten-avtale",
+              "question": "Er bestiller informert om netteiere vi ikke har avtale med?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ],
+          "no_action": "complete",
+          "no_subtasks": []
+        },
+
+        {
+          "id": "t06-ekstratjenester",
+          "question": "TRINN 6 – Ekstratjenester: Er bestiller informert om tilleggstjenester (Maskinstyr., Telenor, Privat nett, Stakefjær, Ledningsmåling)?",
+          "yes_action": "complete",
+          "yes_subtasks": [],
+          "no_action": "complete",
+          "no_subtasks": []
+        },
+
+        {
+          "id": "t07-start-pavisning",
+          "question": "TRINN 7 – Start påvisning: Er utstyr kontrollert (vLOC3 DFT, søketråd)?",
+          "yes_action": "create_subtasks",
+          "yes_subtasks": [
+            {
+              "id": "t07a-dsm",
+              "question": "Er DSM utført (der det er hensiktsmessig)?",
+              "yes_action": "create_subtasks",
+              "yes_subtasks": [
+                {
+                  "id": "t07a1-blue",
+                  "question": "Er delvis ferdiggravde arbeidsområder markert med BLÅ i kart?",
+                  "yes_action": "complete",
+                  "yes_subtasks": [],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ],
+              "no_action": "create_subtasks",
+              "no_subtasks": [
+                {
+                  "id": "t07a-dsm-dok",
+                  "question": "Er det dokumentert hvorfor DSM ikke er utført?",
+                  "yes_action": "complete",
+                  "yes_subtasks": [],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ]
+            },
+            {
+              "id": "t07b-farge",
+              "question": "Er riktig farge brukt (Orange spray på alt i Felt Midt)?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            },
+            {
+              "id": "t07c-info",
+              "question": "Er bestiller informert om hva som påvises og gjeldende sikkerhetsavstander?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ],
+          "no_action": "complete",
+          "no_subtasks": []
+        },
+
+        {
+          "id": "t08-gnss",
+          "question": "TRINN 8 – GNSS/Utstikking: Er hvert punkt målt inn med trykkvalg 'MÅL'?",
+          "yes_action": "create_subtasks",
+          "yes_subtasks": [
+            {
+              "id": "t08a-stikking",
+              "question": "Er traseer stukket ut i tillegg til DSM?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            },
+            {
+              "id": "t08b-ikkylyttbar",
+              "question": "Finnes det traseer som ikke er lyttbare?",
+              "yes_action": "create_subtasks",
+              "yes_subtasks": [
+                {
+                  "id": "t08b-tekstpunkt",
+                  "question": "Er tekstpunkt påført: 'Trase påvist etter dokumentasjon med GNSS/GPS, grav med forsiktighet. Se sikkerhetssone'?",
+                  "yes_action": "complete",
+                  "yes_subtasks": [],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ],
+              "no_action": "complete",
+              "no_subtasks": []
+            },
+            {
+              "id": "t08c-noeyaktighet",
+              "question": "Er nøyaktigheten tilstrekkelig (ikke dårlig signal)?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "create_subtasks",
+              "no_subtasks": [
+                {
+                  "id": "t08c-oek",
+                  "question": "Er sikkerhetssone økt hensiktsmessig pga. dårlig nøyaktighet?",
+                  "yes_action": "complete",
+                  "yes_subtasks": [],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ]
+            }
+          ],
+          "no_action": "complete",
+          "no_subtasks": []
+        },
+
+        {
+          "id": "t09-avvik",
+          "question": "TRINN 9 – Avvik: Er minimum 2 påvisningsmetoder brukt?",
+          "yes_action": "create_subtasks",
+          "yes_subtasks": [
+            {
+              "id": "t09a-kommentar",
+              "question": "Er brukte målemetoder skrevet i kommentarfeltet?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            },
+            {
+              "id": "t09b-konduktiv",
+              "question": "Er minst én konduktiv metode brukt?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            },
+            {
+              "id": "t09c-feildok",
+              "question": "Er det feildokumenterte traseer som krever rødt kryss (X)?",
+              "yes_action": "create_subtasks",
+              "yes_subtasks": [
+                {
+                  "id": "t09c-kryss",
+                  "question": "Er rødt kryss (X) satt på alle feildokumenterte traseer?",
+                  "yes_action": "complete",
+                  "yes_subtasks": [],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ],
+              "no_action": "complete",
+              "no_subtasks": []
+            },
+            {
+              "id": "t09d-netteier",
+              "question": "Er korrekt netteier valgt og kontrollert for alle avvik?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ],
+          "no_action": "create_subtasks",
+          "no_subtasks": [
+            {
+              "id": "t09-ekstra-metode",
+              "question": "Kan ytterligere påvisningsmetode gjennomføres nå?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ]
+        },
+
+        {
+          "id": "t10-kartkommentar",
+          "question": "TRINN 10 – Kartkommentarer: Er alle relevante kartkommentarer lagt inn?",
+          "yes_action": "complete",
+          "yes_subtasks": [],
+          "no_action": "complete",
+          "no_subtasks": []
+        },
+
+        {
+          "id": "t11-avtale-felt",
+          "question": "TRINN 11 – Avtale i felt: Er det behov for å registrere avtale i felt?",
+          "yes_action": "create_subtasks",
+          "yes_subtasks": [
+            {
+              "id": "t11a-hsp",
+              "question": "Er det nærgraving på Høyspent (HSP)?",
+              "yes_action": "create_subtasks",
+              "yes_subtasks": [
+                {
+                  "id": "t11a-skjema",
+                  "question": "Er Nærgraving HSP-skjema utfylt med relevant info til bestiller?",
+                  "yes_action": "complete",
+                  "yes_subtasks": [],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ],
+              "no_action": "complete",
+              "no_subtasks": []
+            },
+            {
+              "id": "t11b-luft30m",
+              "question": "Er det HSP i luft nærmere enn 30 meter fra arbeidsområdet?",
+              "yes_action": "create_subtasks",
+              "yes_subtasks": [
+                {
+                  "id": "t11b-tensio",
+                  "question": "Er bestiller varslet skriftlig til Netteier (Tensio TS/TN)?",
+                  "yes_action": "complete",
+                  "yes_subtasks": [],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ],
+              "no_action": "complete",
+              "no_subtasks": []
+            },
+            {
+              "id": "t11c-blottlagt",
+              "question": "Er kabler blottlagt ved ankomst (Avtale i felt)?",
+              "yes_action": "create_subtasks",
+              "yes_subtasks": [
+                {
+                  "id": "t11c-innfort",
+                  "question": "Er avtale i felt ført inn sammen med bestiller?",
+                  "yes_action": "complete",
+                  "yes_subtasks": [],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ],
+          "no_action": "complete",
+          "no_subtasks": []
+        },
+
+        {
+          "id": "t12-sikkerhetssone",
+          "question": "TRINN 12 – Sikkerhetssone: Er standard sikkerhetssone (1m) tilstrekkelig?",
+          "yes_action": "create_subtasks",
+          "yes_subtasks": [
+            {
+              "id": "t12-info",
+              "question": "Er bestiller informert om gjeldende sikkerhetssone?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ],
+          "no_action": "create_subtasks",
+          "no_subtasks": [
+            {
+              "id": "t12a-oek",
+              "question": "Er sikkerhetssone økt manuelt av FT (blindarbeid ≥2m / >22kV ≥2m)?",
+              "yes_action": "create_subtasks",
+              "yes_subtasks": [
+                {
+                  "id": "t12a-bestiller",
+                  "question": "Er bestiller informert om utvidet sikkerhetssone?",
+                  "yes_action": "complete",
+                  "yes_subtasks": [],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ]
+        },
+
+        {
+          "id": "t13-vilkar",
+          "question": "TRINN 13 – Vilkår: Er bestiller informert om Geomatikk sine vilkår (30 dager, ingen gravetillatelse)?",
+          "yes_action": "create_subtasks",
+          "yes_subtasks": [
+            {
+              "id": "t13a-skade",
+              "question": "Har det oppstått graveskade?",
+              "yes_action": "create_subtasks",
+              "yes_subtasks": [
+                {
+                  "id": "t13a1-netteier",
+                  "question": "Er skaden meldt inn til netteier?",
+                  "yes_action": "create_subtasks",
+                  "yes_subtasks": [
+                    {
+                      "id": "t13a1-geomatikk",
+                      "question": "Er feil ved påvisning/kart meldt til Geomatikk?",
+                      "yes_action": "complete",
+                      "yes_subtasks": [],
+                      "no_action": "complete",
+                      "no_subtasks": []
+                    }
+                  ],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ],
+          "no_action": "complete",
+          "no_subtasks": []
+        },
+
+        {
+          "id": "t14-kvittering",
+          "question": "TRINN 14 – Kvittering: Er GeoGrav brukt og e-postadresse bekreftet?",
+          "yes_action": "complete",
+          "yes_subtasks": [],
+          "no_action": "complete",
+          "no_subtasks": []
+        },
+
+        {
+          "id": "t15-bilder",
+          "question": "TRINN 15 – Bilder: Er oversiktsbilde og bilder av alle påviste merker tatt (LIGGENDE)?",
+          "yes_action": "create_subtasks",
+          "yes_subtasks": [
+            {
+              "id": "t15a-kvalitet",
+              "question": "Er bildekvaliteten sjekket og uklare/duplikate bilder slettet?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            },
+            {
+              "id": "t15b-referanse",
+              "question": "Er referansepunkter med på bildene (overlappende)?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ],
+          "no_action": "complete",
+          "no_subtasks": []
+        },
+
+        {
+          "id": "t16-fullfor",
+          "question": "TRINN 16 – Fullføre: Er jobben fullført uten spesielle endringer?",
+          "yes_action": "create_subtasks",
+          "yes_subtasks": [
+            {
+              "id": "t16a-utfort",
+              "question": "Er STATUS endret til [UTFØRT]?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            },
+            {
+              "id": "t16b-ryddig",
+              "question": "Er bil og arbeidsklær ryddige (synlighetsklasse 3)?",
+              "yes_action": "complete",
+              "yes_subtasks": [],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ],
+          "no_action": "create_subtasks",
+          "no_subtasks": [
+            {
+              "id": "t16-endring",
+              "question": "Er STATUS endret til [UTFØRT MED ENDRING] og bestiller informert om gebyrer?",
+              "yes_action": "create_subtasks",
+              "yes_subtasks": [
+                {
+                  "id": "t16-endring-ryddig",
+                  "question": "Er bil og arbeidsklær ryddige (synlighetsklasse 3)?",
+                  "yes_action": "complete",
+                  "yes_subtasks": [],
+                  "no_action": "complete",
+                  "no_subtasks": []
+                }
+              ],
+              "no_action": "complete",
+              "no_subtasks": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
