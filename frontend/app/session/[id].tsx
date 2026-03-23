@@ -241,7 +241,6 @@ export default function SessionScreen() {
   const [answers, setAnswers] = useState<Record<string, AnswerRecord>>({});
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
-  const [lastTaskCount, setLastTaskCount] = useState(0);
 
   // Load on mount
   useEffect(() => {
@@ -266,14 +265,6 @@ export default function SessionScreen() {
     }
     load();
   }, [id]);
-
-  // Scroll to bottom when new subtasks appear
-  useEffect(() => {
-    if (executionList.length > lastTaskCount) {
-      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 200);
-      setLastTaskCount(executionList.length);
-    }
-  }, [executionList.length]);
 
   // Back handler
   useEffect(() => {
