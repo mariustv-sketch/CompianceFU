@@ -21,24 +21,30 @@ import { Job, LocationData } from '../types';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 
 async function getLocationData(): Promise<LocationData | null> {
-  try {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') return null;
-    const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-    const { latitude, longitude } = loc.coords;
-    let address = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+  const timeout = new Promise<null>((resolve) =>
+    setTimeout(() => resolve(null), 5000)
+  );
+  const locationFetch = (async () => {
     try {
-      const geo = await Location.reverseGeocodeAsync({ latitude, longitude });
-      if (geo.length > 0) {
-        const g = geo[0];
-        const parts = [g.street, g.streetNumber, g.postalCode, g.city, g.country].filter(Boolean);
-        if (parts.length > 0) address = parts.join(' ');
-      }
-    } catch { /* keep coordinate fallback */ }
-    return { lat: latitude, lon: longitude, address };
-  } catch {
-    return null;
-  }
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') return null;
+      const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      const { latitude, longitude } = loc.coords;
+      let address = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+      try {
+        const geo = await Location.reverseGeocodeAsync({ latitude, longitude });
+        if (geo.length > 0) {
+          const g = geo[0];
+          const parts = [g.street, g.streetNumber, g.postalCode, g.city, g.country].filter(Boolean);
+          if (parts.length > 0) address = parts.join(' ');
+        }
+      } catch { /* keep coordinate fallback */ }
+      return { lat: latitude, lon: longitude, address };
+    } catch {
+      return null;
+    }
+  })();
+  return Promise.race([locationFetch, timeout]);
 }
 
 export default function Dashboard() {
